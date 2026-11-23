@@ -1,0 +1,9 @@
+{
+    "name": "Plunder Helper",
+    "version": "1.0.0",
+    "contactEmailAddress": "wittypleb@gmail.com",
+    "requiredDependencies": {
+        "prettyui": 6398181
+    },
+    "hasRibbonIcon": true
+}
