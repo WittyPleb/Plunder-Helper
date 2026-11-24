@@ -27,6 +27,7 @@ local function toggleSettings()
 
     local gameArea = ui.Interfaces:GetComponent(id.Component.TOPLEVEL_V2__GAME_AREA)
     local window = prettyui.Window.new(gameArea, {
+        categoryID = "auto",
         title = "Plunder Helper Settings",
         resizable = true,
         width = 800,
@@ -45,6 +46,7 @@ Event.SettingsLayerReady.Subscribe("plunderHelperSettings", function(settingsLay
     destroyUI()
 
     local settingsBox = prettyui.SimpleView.new(settingsLayerEvent.component, {
+        categoryID = "auto",
         width = 0,
         height = 0,
         widthAnchor = 1.0,
@@ -58,6 +60,7 @@ end)
 Event.ContentLayerReady.Subscribe("plunderHelperContent", function(layerEvent)
     if contentView then contentView:Destroy() end
     contentView = prettyui.SimpleView.new(layerEvent.component, {
+        categoryID = "auto",
         width = 0,
         height = 0,
         widthAnchor = 1.0,
