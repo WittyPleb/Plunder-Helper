@@ -6,7 +6,7 @@ function Cat.Create(page, events)
         prefix = "cat", stem = "Cat", title = "Cat Highlighting",
         name = "Cat", noun = "cat", overlayTooltip = "Show cat overlay box",
         enabled = {
-            { text = "Enable cat tracking", key = "catEnabled", event = "SetCatEnabled" },
+            { text = "Enable cat highlighting", key = "catEnabled", event = "SetCatEnabled" },
             { text = "Enable notification", key = "catNotificationEnabled", event = "SetCatNotificationEnabled" }
         }
     })

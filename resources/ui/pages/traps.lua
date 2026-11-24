@@ -6,7 +6,7 @@ function Traps.Create(page, events)
         prefix = "traps", stem = "Traps", title = "Spear Trap Highlighting",
         name = "Trap", noun = "trap", overlayTooltip = "Show traps overlay box",
         enabled = {
-            { text = "Enable tracking", key = "trapsEnabled", event = "SetTrapsEnabled" }
+            { text = "Enable spear trap highlighting", key = "trapsEnabled", event = "SetTrapsEnabled" }
         }
     })
 end

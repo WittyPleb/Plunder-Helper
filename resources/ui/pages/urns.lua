@@ -6,7 +6,7 @@ function Urns.Create(page, events)
         prefix = "urns", stem = "Urns", title = "Urn Highlighting",
         name = "Urn", noun = "urn", overlayTooltip = "Show urn overlay box",
         enabled = {
-            { text = "Enable tracking", key = "urnsEnabled", event = "SetUrnsEnabled" }
+            { text = "Enable urn highlighting", key = "urnsEnabled", event = "SetUrnsEnabled" }
         }
     })
 end

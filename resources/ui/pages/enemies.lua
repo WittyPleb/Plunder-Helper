@@ -6,7 +6,7 @@ function Enemies.Create(page, events)
         prefix = "enemies", stem = "Enemies", title = "Enemy Highlighting",
         name = "Enemy", noun = "enemy", overlayTooltip = "Show enemy overlay box",
         enabled = {
-            { text = "Enable enemy tracking", key = "enemiesEnabled", event = "SetEnemiesEnabled" }
+            { text = "Enable enemy highlighting", key = "enemiesEnabled", event = "SetEnemiesEnabled" }
         }
     })
 end

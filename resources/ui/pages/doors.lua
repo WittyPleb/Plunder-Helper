@@ -6,8 +6,8 @@ function Doors.Create(page, events)
         prefix = "doors", stem = "Doors", title = "Door Highlighting",
         name = "Door", noun = "door", overlayTooltip = "Show door overlay box",
         enabled = {
-            { text = "Enable door tracking", key = "doorsEnabled", event = "SetDoorsEnabled" },
-            { text = "Enable exit tracking", key = "exitsEnabled", event = "SetExitsEnabled" }
+            { text = "Enable door highlighting", key = "doorsEnabled", event = "SetDoorsEnabled" },
+            { text = "Enable exit highlighting", key = "exitsEnabled", event = "SetExitsEnabled" }
         }
     })
 end
