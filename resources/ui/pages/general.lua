@@ -1,8 +1,13 @@
+---@class PlunderGeneralPage
 local GeneralPage = {}
 
 local Settings = require("resources/settings")
 local Tracking = require("resources/ui/tracking")
 
+---Build this category's settings controls.
+---@param page prettyui.SimpleView
+---@param events PlunderEvents
+---@return nil
 function GeneralPage.Create(page, events)
     page:AddTitle("Highlights")
     page:AddCheckboxButton({

@@ -1,6 +1,11 @@
+---@class PlunderDoorsPage
 local Doors = {}
 local Tracking = require("resources/ui/tracking")
 
+---Build this category's settings controls.
+---@param page prettyui.SimpleView
+---@param events PlunderEvents
+---@return nil
 function Doors.Create(page, events)
     Tracking.Create(page, events, {
         prefix = "doors", stem = "Doors", title = "Door Highlighting",

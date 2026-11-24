@@ -1,3 +1,7 @@
+---@class PlunderUIHandle
+---@field Destroy fun() Releases the settings container.
+
+---@class PlunderUI
 local UI = {}
 
 ---Pages
@@ -10,6 +14,10 @@ local sarcophagus = require("resources/ui/pages/sarcophagus")
 local enemies = require("resources/ui/pages/enemies")
 local cat = require("resources/ui/pages/cat")
 
+---Populate the settings container and return its cleanup handle.
+---@param settingsBox prettyui.SimpleView|prettyui.Window
+---@param events PlunderEvents
+---@return PlunderUIHandle
 local CreateUI = function(settingsBox, events)
     local tabs = settingsBox:AddTabs(
         { "General", "Traps", "Urns", "Exits", "Chests", "Sarcophagus", "Enemies", "Cat" },

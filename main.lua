@@ -5,10 +5,15 @@ local events = require("resources/events/events")
 
 events.SubscribeAll()
 
+---@type PlunderUIHandle|prettyui.Window|prettyui.SimpleView|nil
 local activeWindow
+---@type prettyui.SimpleView?
 local contentView
+---@type boolean?
 local contentViewOpen
 
+---Close the active settings container.
+---@return nil
 local function destroyUI()
     contentViewOpen = false
     if activeWindow then
@@ -17,6 +22,8 @@ local function destroyUI()
     end
 end
 
+---Toggle the standalone settings window.
+---@return nil
 local function toggleSettings()
     if contentViewOpen then
         destroyUI()
@@ -43,6 +50,7 @@ local function toggleSettings()
 end
 
 Event.SettingsLayerReady.Subscribe("plunderHelperSettings", function(settingsLayerEvent)
+    ---@cast settingsLayerEvent { component: ui.Component }
     destroyUI()
 
     local settingsBox = prettyui.SimpleView.new(settingsLayerEvent.component, {
@@ -58,6 +66,7 @@ Event.SettingsLayerReady.Subscribe("plunderHelperSettings", function(settingsLay
 end)
 
 Event.ContentLayerReady.Subscribe("plunderHelperContent", function(layerEvent)
+    ---@cast layerEvent { component: ui.Component }
     if contentView then contentView:Destroy() end
     contentView = prettyui.SimpleView.new(layerEvent.component, {
         categoryID = "auto",
@@ -69,6 +78,8 @@ Event.ContentLayerReady.Subscribe("plunderHelperContent", function(layerEvent)
     contentView:AddSimpleButton("Toggle Settings", toggleSettings)
 end)
 
+---Release subscriptions and UI when the plugin is unloaded.
+---@return nil
 function PluginShutdown()
     Event.SettingsLayerReady.Unsubscribe("plunderHelperSettings")
     Event.ContentLayerReady.Unsubscribe("plunderHelperContent")

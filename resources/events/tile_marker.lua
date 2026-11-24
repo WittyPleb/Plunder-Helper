@@ -1,11 +1,31 @@
+---@class PlunderTileTopology
+---@field triangles integer[] Zero-based triangle vertex indices.
+---@field perimeter integer[] One-based indices into the geometry positions.
+---@field lines integer[] Zero-based indices into the perimeter vertices.
+
+---@class PlunderTileGeometry
+---@field minX integer
+---@field minZ integer
+---@field level integer
+---@field width integer Width in tiles.
+---@field depth integer Depth in tiles.
+---@field filled boolean
+---@field positions table<integer, Vector3> Interior vertices are omitted for unfilled tiles.
+---@field perimeter Vector3[]
+
+---@class PlunderTileMarker
 local TileMarker = {}
 
 local TILE_SIZE = 512
 local HEIGHT_OFFSET = 30
 local OUTLINE_HEIGHT_BIAS = 1
 
+---@type table<integer, table<integer, PlunderTileTopology>>
 local topologies = {}
 
+---@param width integer
+---@param depth integer
+---@return PlunderTileTopology
 local function topology(width, depth)
     local sizes = topologies[width]
     if not sizes then
@@ -16,6 +36,7 @@ local function topology(width, depth)
     if sizes[depth] then return sizes[depth] end
 
     local stride = width + 1
+    ---@type integer[], integer[], integer[]
     local triangles, perimeter, lines = {}, {}, {}
 
     for z = 0, depth - 1 do
@@ -30,6 +51,9 @@ local function topology(width, depth)
         end
     end
 
+    ---@param x integer
+    ---@param z integer
+    ---@return nil
     local function addCorner(x, z) perimeter[#perimeter + 1] = z * stride + x + 1 end
 
     for x = 0, width do
@@ -59,6 +83,15 @@ local function topology(width, depth)
     return result
 end
 
+---Draw a terrain-following marker, reusing compatible cached geometry.
+---@param entity Loc|NPC|nil
+---@param width integer
+---@param depth integer
+---@param outlineColor integer Packed RGBA color.
+---@param fillColor integer? Nil disables filling.
+---@param ignoreDepth boolean
+---@param geometry PlunderTileGeometry?
+---@return PlunderTileGeometry? geometry Nil when the entity, dimensions, or terrain are unavailable.
 function TileMarker.Draw(entity, width, depth, outlineColor, fillColor, ignoreDepth, geometry)
     if not entity or not entity.isValid then return end
     if width <= 0 or depth <= 0 then return end

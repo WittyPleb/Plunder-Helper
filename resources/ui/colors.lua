@@ -1,5 +1,32 @@
+---@class PlunderToggleChoice
+---@field text string
+---@field tooltip? string
+---@field value string Persistent setting key.
+---@field selected boolean
+
+---@alias PlunderToggleCallback fun(control: unknown, index: integer, value: string, selected: boolean)
+
+---@class PlunderExtraToggle
+---@field choice PlunderToggleChoice
+---@field onChange PlunderToggleCallback
+
+---@class PlunderColorSetting
+---@field label string
+---@field value integer Packed RGBA color.
+---@field windowTitle string
+---@field tooltip string
+---@field onChange fun(control: unknown, color: integer)
+---@field toggle PlunderToggleChoice
+---@field onToggle PlunderToggleCallback
+---@field extraToggles? PlunderExtraToggle[]
+
+---@class PlunderColors
 local Colors = {}
 
+---Build aligned color pickers and their visibility controls.
+---@param page prettyui.SimpleView
+---@param colors PlunderColorSetting[]
+---@return nil
 function Colors.Create(page, colors)
     local columnWidth = 140
     local columnGap = 8
@@ -23,6 +50,7 @@ function Colors.Create(page, colors)
         })
     end
 
+    ---@type number[]
     local columnPositions = {}
     local extraRows = 0
 

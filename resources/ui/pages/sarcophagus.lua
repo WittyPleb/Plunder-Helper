@@ -1,6 +1,11 @@
+---@class PlunderSarcophagusPage
 local Sarcophagus = {}
 local Tracking = require("resources/ui/tracking")
 
+---Build this category's settings controls.
+---@param page prettyui.SimpleView
+---@param events PlunderEvents
+---@return nil
 function Sarcophagus.Create(page, events)
     Tracking.Create(page, events, {
         prefix = "sarco", stem = "Sarco", title = "Sarcophagus Highlighting",

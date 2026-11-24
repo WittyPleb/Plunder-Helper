@@ -1,14 +1,15 @@
 ---@class PlunderSettings
 local Settings = {}
 
----@type table<String, Bool|Int|Float|String|Table>
+---@type table<string, boolean|number|string|table>
 local values = {}
 
----@type table<String, Bool>
+---@type table<string, boolean>
 local loaded = {}
 
----@param key String
----@return Bool?
+---Missing values are normalized to false.
+---@param key string
+---@return boolean
 
 function Settings:GetBool(key)
     if not loaded[key] then
@@ -17,20 +18,21 @@ function Settings:GetBool(key)
     end
 
     local value = values[key]
-    ---@cast value Bool?
+    ---@cast value boolean
     return value
 end
 
----@param key String
----@param value Bool
+---@param key string
+---@param value boolean
+---@return nil
 function Settings:SetBool(key, value)
     PersistentDB:SetBool(key, value)
     values[key] = value
     loaded[key] = true
 end
 
----@param key String
----@return Int?
+---@param key string
+---@return integer?
 function Settings:GetInt(key)
     if not loaded[key] then
         values[key] = PersistentDB:GetInt(key)
@@ -38,20 +40,21 @@ function Settings:GetInt(key)
     end
 
     local value = values[key]
-    ---@cast value Int?
+    ---@cast value integer?
     return value
 end
 
----@param key String
----@param value Int
+---@param key string
+---@param value integer
+---@return nil
 function Settings:SetInt(key, value)
     PersistentDB:SetInt(key, value)
     values[key] = value
     loaded[key] = true
 end
 
----@param key String
----@return Float?
+---@param key string
+---@return number?
 function Settings:GetFloat(key)
     if not loaded[key] then
         values[key] = PersistentDB:GetFloat(key)
@@ -59,20 +62,21 @@ function Settings:GetFloat(key)
     end
 
     local value = values[key]
-    ---@cast value Float?
+    ---@cast value number?
     return value
 end
 
----@param key String
----@param value Float
+---@param key string
+---@param value number
+---@return nil
 function Settings:SetFloat(key, value)
     PersistentDB:SetFloat(key, value)
     values[key] = value
     loaded[key] = true
 end
 
----@param key String
----@return String?
+---@param key string
+---@return string?
 function Settings:GetString(key)
   if not loaded[key] then
     values[key] = PersistentDB:GetString(key)
@@ -80,20 +84,21 @@ function Settings:GetString(key)
   end
 
   local value = values[key]
-  ---@cast value String?
+  ---@cast value string?
   return value
 end
 
----@param key String
----@param value String
+---@param key string
+---@param value string
+---@return nil
 function Settings:SetString(key, value)
   PersistentDB:SetString(key, value)
   values[key] = value
   loaded[key] = true
 end
 
----@param key String
----@return Table?
+---@param key string
+---@return table?
 function Settings:GetStructuredData(key)
   if not loaded[key] then
     values[key] = PersistentDB:GetStructuredData(key)
@@ -101,12 +106,13 @@ function Settings:GetStructuredData(key)
   end
 
   local value = values[key]
-  ---@cast value Table?
+  ---@cast value table?
   return value
 end
 
----@param key String
----@param value Table
+---@param key string
+---@param value table
+---@return nil
 function Settings:SetStructuredData(key, value)
   PersistentDB:SetStructuredData(key, value)
   values[key] = value

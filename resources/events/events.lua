@@ -1,4 +1,212 @@
+---@alias PlunderEntity Loc|NPC
+---@alias PlunderEntityKey string|integer
+---@alias PlunderEntitySource fun(center: CoordGrid): PlunderEntity[]?
+---@alias PlunderSettingValue boolean|integer
+
+---@class PlunderTrackerSettings
+---@field enabled string
+---@field fontSize string
+---@field textColor string
+---@field showName string
+---@field tileColor string
+---@field showTile string
+---@field showAABB string
+---@field aabbColor string
+---@field fillAABB string
+---@field aabbIgnoreDepth string
+---@field aabbFillOpacity string
+---@field fillTile string
+---@field tileIgnoreDepth string
+---@field fullSize? string
+
+---@class PlunderTooltipOptions
+---@field parent ui.Layer
+---@field text string
+---@field font integer
+---@field width integer
+---@field height integer
+---@field hidden boolean
+
+---@class PlunderTrackerAdapter
+---@field ids integer[]
+---@field source? PlunderEntitySource Defaults to nearby locations.
+---@field key fun(entity: PlunderEntity): PlunderEntityKey?
+---@field anchor fun(entity: PlunderEntity, options: PlunderTooltipOptions): prettyui.AnchoredTooltip?
+---@field tileSize fun(entity: PlunderEntity, fullSize: boolean?): integer, integer
+---@field markerID string
+---@field notificationEnabled? fun(): boolean
+---@field notify? fun(entities: PlunderEntity[], center: CoordGrid?)
+
+---@class PlunderAABBState
+---@field minX number
+---@field minY number
+---@field minZ number
+---@field maxX number
+---@field maxY number
+---@field maxZ number
+---@field color integer
+---@field fillColor? integer
+---@field ignoreDepth boolean
+
+---@class PlunderTrackedEntry
+---@field entity PlunderEntity
+---@field configID integer
+---@field name string
+---@field nameTooltip? prettyui.AnchoredTooltip
+---@field tileGeometry? PlunderTileGeometry
+---@field aabbState? PlunderAABBState
+---@field aabbFill? ShapeInstance
+---@field aabbOutline? ShapeInstance
+---@field aabbFillSignature? string
+---@field aabbOutlineSignature? string
+
+---@class PlunderTracker
+---@field adapter PlunderTrackerAdapter
+---@field settings PlunderTrackerSettings
+---@field tracked table<PlunderEntityKey, PlunderTrackedEntry>
+---@field configIDs table<integer, boolean>
+
+---Public setters and color getters are installed by bindCategory and bindEnabled.
 ---@class PlunderEvents
+---@field [string] function
+---@field SetTrapsTextColor fun(value: integer?)
+---@field GetTrapsTextColor fun(): integer
+---@field SetTrapsTileColor fun(value: integer?)
+---@field GetTrapsTileColor fun(): integer
+---@field SetTrapsAABBColor fun(value: integer?)
+---@field GetTrapsAABBColor fun(): integer
+---@field SetTrapsFontSize fun(value: integer)
+---@field SetTrapsAABBFillOpacity fun(value: integer)
+---@field SetTrapsTileIgnoreDepth fun(value: boolean)
+---@field SetTrapsTileMarkerFullSize fun(value: boolean)
+---@field SetTrapsAABBIgnoreDepth fun(value: boolean)
+---@field SetShowTrapsName fun(value: boolean)
+---@field SetShowTrapsTileMarker fun(value: boolean)
+---@field SetShowTrapsAABB fun(value: boolean)
+---@field SetFillTrapsTileMarker fun(value: boolean)
+---@field SetFillTrapsAABB fun(value: boolean)
+---@field SetUrnsTextColor fun(value: integer?)
+---@field GetUrnsTextColor fun(): integer
+---@field SetUrnsTileColor fun(value: integer?)
+---@field GetUrnsTileColor fun(): integer
+---@field SetUrnsAABBColor fun(value: integer?)
+---@field GetUrnsAABBColor fun(): integer
+---@field SetUrnsFontSize fun(value: integer)
+---@field SetUrnsAABBFillOpacity fun(value: integer)
+---@field SetUrnsTileIgnoreDepth fun(value: boolean)
+---@field SetUrnsTileMarkerFullSize fun(value: boolean)
+---@field SetUrnsAABBIgnoreDepth fun(value: boolean)
+---@field SetShowUrnsName fun(value: boolean)
+---@field SetShowUrnsTileMarker fun(value: boolean)
+---@field SetShowUrnsAABB fun(value: boolean)
+---@field SetFillUrnsTileMarker fun(value: boolean)
+---@field SetFillUrnsAABB fun(value: boolean)
+---@field SetDoorsTextColor fun(value: integer?)
+---@field GetDoorsTextColor fun(): integer
+---@field SetDoorsTileColor fun(value: integer?)
+---@field GetDoorsTileColor fun(): integer
+---@field SetDoorsAABBColor fun(value: integer?)
+---@field GetDoorsAABBColor fun(): integer
+---@field SetDoorsFontSize fun(value: integer)
+---@field SetDoorsAABBFillOpacity fun(value: integer)
+---@field SetDoorsTileIgnoreDepth fun(value: boolean)
+---@field SetDoorsTileMarkerFullSize fun(value: boolean)
+---@field SetDoorsAABBIgnoreDepth fun(value: boolean)
+---@field SetShowDoorsName fun(value: boolean)
+---@field SetShowDoorsTileMarker fun(value: boolean)
+---@field SetShowDoorsAABB fun(value: boolean)
+---@field SetFillDoorsTileMarker fun(value: boolean)
+---@field SetFillDoorsAABB fun(value: boolean)
+---@field SetChestsTextColor fun(value: integer?)
+---@field GetChestsTextColor fun(): integer
+---@field SetChestsTileColor fun(value: integer?)
+---@field GetChestsTileColor fun(): integer
+---@field SetChestsAABBColor fun(value: integer?)
+---@field GetChestsAABBColor fun(): integer
+---@field SetChestsFontSize fun(value: integer)
+---@field SetChestsAABBFillOpacity fun(value: integer)
+---@field SetChestsTileIgnoreDepth fun(value: boolean)
+---@field SetChestsTileMarkerFullSize fun(value: boolean)
+---@field SetChestsAABBIgnoreDepth fun(value: boolean)
+---@field SetShowChestsName fun(value: boolean)
+---@field SetShowChestsTileMarker fun(value: boolean)
+---@field SetShowChestsAABB fun(value: boolean)
+---@field SetFillChestsTileMarker fun(value: boolean)
+---@field SetFillChestsAABB fun(value: boolean)
+---@field SetSarcoTextColor fun(value: integer?)
+---@field GetSarcoTextColor fun(): integer
+---@field SetSarcoTileColor fun(value: integer?)
+---@field GetSarcoTileColor fun(): integer
+---@field SetSarcoAABBColor fun(value: integer?)
+---@field GetSarcoAABBColor fun(): integer
+---@field SetSarcoFontSize fun(value: integer)
+---@field SetSarcoAABBFillOpacity fun(value: integer)
+---@field SetSarcoTileIgnoreDepth fun(value: boolean)
+---@field SetSarcoTileMarkerFullSize fun(value: boolean)
+---@field SetSarcoAABBIgnoreDepth fun(value: boolean)
+---@field SetShowSarcoName fun(value: boolean)
+---@field SetShowSarcoTileMarker fun(value: boolean)
+---@field SetShowSarcoAABB fun(value: boolean)
+---@field SetFillSarcoTileMarker fun(value: boolean)
+---@field SetFillSarcoAABB fun(value: boolean)
+---@field SetEnemiesTextColor fun(value: integer?)
+---@field GetEnemiesTextColor fun(): integer
+---@field SetEnemiesTileColor fun(value: integer?)
+---@field GetEnemiesTileColor fun(): integer
+---@field SetEnemiesAABBColor fun(value: integer?)
+---@field GetEnemiesAABBColor fun(): integer
+---@field SetEnemiesFontSize fun(value: integer)
+---@field SetEnemiesAABBFillOpacity fun(value: integer)
+---@field SetEnemiesTileIgnoreDepth fun(value: boolean)
+---@field SetEnemiesTileMarkerFullSize fun(value: boolean)
+---@field SetEnemiesAABBIgnoreDepth fun(value: boolean)
+---@field SetShowEnemiesName fun(value: boolean)
+---@field SetShowEnemiesTileMarker fun(value: boolean)
+---@field SetShowEnemiesAABB fun(value: boolean)
+---@field SetFillEnemiesTileMarker fun(value: boolean)
+---@field SetFillEnemiesAABB fun(value: boolean)
+---@field SetCatTextColor fun(value: integer?)
+---@field GetCatTextColor fun(): integer
+---@field SetCatTileColor fun(value: integer?)
+---@field GetCatTileColor fun(): integer
+---@field SetCatAABBColor fun(value: integer?)
+---@field GetCatAABBColor fun(): integer
+---@field SetCatFontSize fun(value: integer)
+---@field SetCatAABBFillOpacity fun(value: integer)
+---@field SetCatTileIgnoreDepth fun(value: boolean)
+---@field SetCatTileMarkerFullSize fun(value: boolean)
+---@field SetCatAABBIgnoreDepth fun(value: boolean)
+---@field SetShowCatName fun(value: boolean)
+---@field SetShowCatTileMarker fun(value: boolean)
+---@field SetShowCatAABB fun(value: boolean)
+---@field SetFillCatTileMarker fun(value: boolean)
+---@field SetFillCatAABB fun(value: boolean)
+---@field SetGuardianTextColor fun(value: integer?)
+---@field GetGuardianTextColor fun(): integer
+---@field SetGuardianTileColor fun(value: integer?)
+---@field GetGuardianTileColor fun(): integer
+---@field SetGuardianAABBColor fun(value: integer?)
+---@field GetGuardianAABBColor fun(): integer
+---@field SetGuardianFontSize fun(value: integer)
+---@field SetGuardianAABBFillOpacity fun(value: integer)
+---@field SetGuardianTileIgnoreDepth fun(value: boolean)
+---@field SetGuardianTileMarkerFullSize fun(value: boolean)
+---@field SetGuardianAABBIgnoreDepth fun(value: boolean)
+---@field SetShowGuardianName fun(value: boolean)
+---@field SetShowGuardianTileMarker fun(value: boolean)
+---@field SetShowGuardianAABB fun(value: boolean)
+---@field SetFillGuardianTileMarker fun(value: boolean)
+---@field SetFillGuardianAABB fun(value: boolean)
+---@field SetTrapsEnabled fun(value: boolean)
+---@field SetUrnsEnabled fun(value: boolean)
+---@field SetDoorsEnabled fun(value: boolean)
+---@field SetExitsEnabled fun(value: boolean)
+---@field SetChestsEnabled fun(value: boolean)
+---@field SetSarcoEnabled fun(value: boolean)
+---@field SetEngravedEnabled fun(value: boolean)
+---@field SetEnemiesEnabled fun(value: boolean)
+---@field SetCatEnabled fun(value: boolean)
+---@field SetGuardianEnabled fun(value: boolean)
 
 local Events = {}
 local Settings = require("resources/settings")
@@ -11,6 +219,7 @@ local TILE_FILL_ALPHA = 0x80
 local TRACKING_RADIUS = 48 -- Tiles around the player, 48 is the render distance for NPCs
 local DEFAULT_FONT_SIZE = 12
 
+---@type integer[]
 local AABB_TRIANGLES = {
   0, 2, 1,
   0, 3, 2,
@@ -38,6 +247,7 @@ local AABB_TRIANGLES = {
   1, 5, 6,
 }
 
+---@type integer[]
 local AABB_LINES = {
   0, 1,
   1, 2,
@@ -53,20 +263,38 @@ local AABB_LINES = {
   3, 7,
 }
 
+---@type PlunderTracker[]
 local trackers = {}
+---@type table<PlunderEntitySource, table<integer, PlunderTracker[]>>
 local trackersByConfigID = {}
+---@param center CoordGrid
+---@return Loc[]?
 local function nearbyLocs(center) return LocList.ByDistance(center, TRACKING_RADIUS, true) end
+---@param center CoordGrid
+---@return NPC[]?
 local function nearbyNPCs(center) return NPCList.ByDistance(center, TRACKING_RADIUS) end
+---@type (fun())?
 local updateAll = nil
+---@type (fun())?
 local drawTileMarkers = nil
+---@type ui.Layer?
 local highlightLayer = nil
 local runtimeSubscribed = false
+---@type boolean?
 local highlightsHidden = nil
 
+---@param hex string? Hexadecimal RGBA string.
+---@param default integer
+---@return integer
 local function parseColor(hex, default) return (hex and tonumber(hex, 16)) or default end
+---@return boolean
 local function isWorldMapOpen() return ui.Interfaces:GetInterface(id.Interface.WORLDMAP_V2) ~= nil end
+---@param text string
+---@return string
 local function trim(text) return string.match(text, "^%s*(.-)%s*$") end
 
+---@param ... unknown
+---@return string?
 local function firstName(...)
     for index = 1, select("#", ...) do
         local name = select(index, ...)
@@ -74,22 +302,29 @@ local function firstName(...)
     end
 end
 
+---@param entity PlunderEntity
+---@return string
 local function entityName(entity)
     return firstName(entity.displayName, entity.config and entity.config.name, entity.config and entity.config.configName)
     or tostring(entity.configID)
 end
 
+---@return CoordGrid?
 local function playerCoord()
     local player = PlayerList.Self()
     return player and player.isValid and player.coordGrid or nil
 end
 
+---@param entity PlunderEntity
+---@param center CoordGrid?
+---@return boolean
 local function isNearby(entity, center)
     if not center then return false end
     local coord = entity.coordGrid
     return coord.level == center.level and math.abs(coord.x - center.x) <= TRACKING_RADIUS and math.abs(coord.z - center.z) <= TRACKING_RADIUS
 end
 
+---@return boolean hidden
 local function updateHighlightVisibility()
     local hidden = isWorldMapOpen()
     if highlightsHidden == hidden then return hidden end
@@ -107,9 +342,13 @@ local function updateHighlightVisibility()
     return hidden
 end
 
+---Refresh each enabled source once and distribute entities to matching trackers.
+---@return nil
 local function refreshTrackers()
     local center = playerCoord()
+    ---@type table<PlunderTracker, PlunderEntity[]>, table<PlunderTracker, boolean?>
     local candidates, enabled = {}, {}
+    ---@type table<PlunderEntitySource, boolean>
     local enabledSources = {}
     for _, tracker in ipairs(trackers) do
         candidates[tracker] = {}
@@ -138,6 +377,10 @@ local function refreshTrackers()
     end
 end
 
+---@param tracker PlunderTracker
+---@param name string
+---@return integer width
+---@return integer height
 local function textSize(tracker, name)
     local fontSize = Settings:GetInt(tracker.settings.fontSize) or DEFAULT_FONT_SIZE
     local width, height = #name * fontSize * 0.65, fontSize
@@ -153,6 +396,7 @@ local function textSize(tracker, name)
     return math.min(300, math.ceil(width + 24)), math.ceil(height + 20)
 end
 
+---@return ui.Layer?
 local function ensureHighlightLayer()
     if highlightLayer then return highlightLayer end
     local parent = ui.Interfaces:GetComponent(id.Component.TOPLEVEL_V2__PLUGIN_BUILD_LAYER_BOTTOM)
@@ -169,8 +413,12 @@ local function ensureHighlightLayer()
     return highlightLayer
 end
 
+---@param adapter PlunderTrackerAdapter
+---@param settings PlunderTrackerSettings
+---@return PlunderTracker
 local function createTracker(adapter, settings)
     adapter.source = adapter.source or nearbyLocs
+    ---@type PlunderTracker
     local tracker = {
         adapter = adapter,
         settings = settings,
@@ -178,6 +426,7 @@ local function createTracker(adapter, settings)
         configIDs = {}
     }
 
+    ---@return nil
     function tracker:loadConfigIDs()
         self.configIDs = {}
 
@@ -186,11 +435,14 @@ local function createTracker(adapter, settings)
         end
     end
 
+    ---@return integer
     function tracker:fontID()
         local size = Settings:GetInt(self.settings.fontSize) or DEFAULT_FONT_SIZE
         return id.Font["NOTOSANS_BOLD_" .. tostring(size)] or id.Font.NOTOSANS_BOLD_12
     end
 
+    ---@param entity PlunderEntity?
+    ---@return boolean
     function tracker:isTracked(entity)
         if not entity or not entity.isValid then
             return false
@@ -198,6 +450,9 @@ local function createTracker(adapter, settings)
         return self.configIDs[entity.configID] == true
     end
 
+    ---@param entities PlunderEntity[]? Omit to query the source around the player.
+    ---@param center CoordGrid?
+    ---@return nil
     function tracker:refresh(entities, center)
         if entities == nil then center = playerCoord() end
 
@@ -210,6 +465,7 @@ local function createTracker(adapter, settings)
         end
 
         entities = entities or self.adapter.source(center) or {}
+        ---@type table<PlunderEntityKey, PlunderEntity>
         local visible = {}
 
         for _, entity in ipairs(entities) do
@@ -231,6 +487,9 @@ local function createTracker(adapter, settings)
 
     end
 
+    ---@param entity PlunderEntity
+    ---@param key PlunderEntityKey?
+    ---@return nil
     function tracker:start(entity, key)
         if not key or not entity.isValid or not ensureHighlightLayer() then return end
         local entry = self.tracked[key]
@@ -252,6 +511,8 @@ local function createTracker(adapter, settings)
         }
     end
 
+    ---@param key PlunderEntityKey
+    ---@return nil
     function tracker:destroyEntry(key)
         local entry = self.tracked[key]
         if not entry then return end
@@ -261,6 +522,8 @@ local function createTracker(adapter, settings)
         self.tracked[key] = nil
     end
 
+    ---@param entity PlunderEntity
+    ---@return prettyui.AnchoredTooltip?
     function tracker:createTooltip(entity)
         if Settings:GetBool(self.settings.showName) ~= true then return nil end
         local parent = ensureHighlightLayer()
@@ -279,13 +542,17 @@ local function createTracker(adapter, settings)
         })
     end
 
+    ---@return integer
     function tracker:textColor() return parseColor(Settings:GetString(self.settings.textColor), DEFAULT_TEXT_COLOR) end
     
+    ---@param alpha integer? Alpha byte; defaults to 255.
+    ---@return integer
     function tracker:tileColor(alpha)
         local color = parseColor(Settings:GetString(self.settings.tileColor), DEFAULT_TILE_COLOR)
         return (color & ~0xFF) | (alpha or 0xFF)
     end
 
+    ---@return nil
     function tracker:drawTiles()
         if Settings:GetBool(self.settings.showTile) ~= true then return end
         local fullSize = self.settings.fullSize and Settings:GetBool(self.settings.fullSize) == true
@@ -301,17 +568,23 @@ local function createTracker(adapter, settings)
         end
     end
     
+    ---@return integer
     function tracker:aabbColor() return parseColor(Settings:GetString(self.settings.aabbColor), DEFAULT_TILE_COLOR) end
   
+    ---@return integer
     function tracker:aabbFillColor()
         local opacity = Settings:GetInt(self.settings.aabbFillOpacity) or 25
         return (self:aabbColor() & ~0xFF) | math.floor(math.max(0, math.min(100, opacity)) * 2.55 + 0.5)
     end
 
+    ---@return boolean
     function tracker:isEnabled()
         return Settings:GetBool("enableTracking") == true and Settings:GetBool(self.settings.enabled) == true
     end
 
+    ---@param key PlunderEntityKey
+    ---@param entry PlunderTrackedEntry
+    ---@return nil
     function tracker:updateAABB(key, entry)
         local entity = entry.entity
         local aabb = Settings:GetBool(self.settings.showAABB) == true and entity and entity.isValid and entity.aabb
@@ -345,6 +618,7 @@ local function createTracker(adapter, settings)
             maxX = max.x, maxY = max.y, maxZ = max.z,
             color = color, fillColor = fillColor, ignoreDepth = ignoreDepth }
         local boundsSignature = table.concat({ min.x, min.y, min.z, max.x, max.y, max.z }, ":")
+        ---@return Vector3[]
         local function positions()
             return{
                 Vector3.new(min.x, min.y, min.z),
@@ -358,6 +632,13 @@ local function createTracker(adapter, settings)
             }
         end
 
+        ---@param field "aabbFill"|"aabbOutline"
+        ---@param name string
+        ---@param signature string
+        ---@param color integer
+        ---@param lineWidth number
+        ---@param createData fun(): ShapeData
+        ---@return nil
         local function updateShape(field, name, signature, color, lineWidth, createData)
             if not entry[field] then entry[field] = ShapeList.CreateInstance(name) end
             local shape = entry[field]
@@ -394,6 +675,8 @@ local function createTracker(adapter, settings)
         end)
     end
 
+    ---@param visibilityKnown boolean? True when visibility was already refreshed this frame.
+    ---@return nil
     function tracker:updateAABBs(visibilityKnown)
         if not visibilityKnown then updateHighlightVisibility() end
         for key, entry in pairs(self.tracked) do
@@ -404,11 +687,15 @@ local function createTracker(adapter, settings)
     return tracker
 end
 
+---@param loc Loc
+---@return string
 local function locSlotKey(loc)
     local coord = loc.coordGrid
     return string.format("%d:%d:%d:%s:%s", coord.level, coord.x, coord.z, loc.shapeType, loc.rotationType)
 end
 
+---@param loc Loc
+---@return string
 local function locKey(loc)
     local configID = loc.isMultiLoc and loc.parentConfigID or loc.configID
     return locSlotKey(loc) .. ":" .. tostring(configID)
@@ -610,13 +897,19 @@ local enemiesTracker = createTracker({
     fullSize = "enemiesTileMarkerFullSize"
 })
 
+---@type table<integer, NPC>
 local notifiedCats = {}
+---@type table<prettyui.AchievementPopup, boolean>
 local catPopups = {}
 
+---@return boolean
 local function catNotificationEnabled()
     return Settings:GetBool("catNotificationEnabled") == true
 end
 
+---@param entities NPC[]
+---@param center CoordGrid?
+---@return nil
 local function notifyCats(entities, center)
     for uid, entity in pairs(notifiedCats) do
         if not entity.isValid then notifiedCats[uid] = nil end
@@ -625,6 +918,7 @@ local function notifyCats(entities, center)
 
     for _, entity in ipairs(entities) do
         if entity.isValid and isNearby(entity, center) and not notifiedCats[entity.uid] then
+            ---@type prettyui.AchievementPopup?
             local popup
             popup = prettyui.AchievementPopup.show({
                 title = "CAT SPOTTED!",
@@ -702,6 +996,8 @@ local guardianTracker = createTracker({
 
 trackers = { trapsTracker, urnsTracker, doorsTracker, exitsTracker, chestsTracker, sarcoTracker, engravedTracker, enemiesTracker, catTracker, guardianTracker }
 
+---Update visibility and bounding boxes between server ticks.
+---@return nil
 updateAll = function()
     updateHighlightVisibility()
 
@@ -715,6 +1011,7 @@ updateAll = function()
     end
 end
 
+---@return nil
 drawTileMarkers = function()
     if updateHighlightVisibility() then return end
     for _, tracker in ipairs(trackers) do
@@ -722,6 +1019,8 @@ drawTileMarkers = function()
     end
 end
 
+---@param tracker PlunderTracker
+---@return nil
 local function refreshTrackerVisuals(tracker)
     for key, entry in pairs(tracker.tracked) do
         if not entry.entity or not entry.entity.isValid then
@@ -733,12 +1032,17 @@ local function refreshTrackerVisuals(tracker)
     end
 end
 
+---@param value boolean
+---@return nil
 Events.SetEnabled = function(value)
     Settings:SetBool("enableTracking", value)
     refreshTrackers()
 end
 
 -- Bind public event names to the tracker setting keys in one place.
+---@param stem string
+---@param group PlunderTracker[]
+---@return nil
 local function bindCategory(stem, group)
     local primary = group[1]
     local definitions = {
@@ -761,6 +1065,8 @@ local function bindCategory(stem, group)
         local action, remainder = suffix:match("^(Show)(.*)$")
         if not action then action, remainder = suffix:match("^(Fill)(.*)$") end
         local name = action and ("Set" .. action .. stem .. remainder) or ("Set" .. stem .. suffix)
+        ---@param value PlunderSettingValue? Color setters accept nil to restore the default.
+        ---@return nil
         Events[name] = function(value)
             local setting = primary.settings[field]
             if kind == "color" then
@@ -790,7 +1096,12 @@ bindCategory("Enemies", { enemiesTracker })
 bindCategory("Cat", { catTracker })
 bindCategory("Guardian", { guardianTracker })
 
+---@param stem string
+---@param tracker PlunderTracker
+---@return nil
 local function bindEnabled(stem, tracker)
+    ---@param value boolean
+    ---@return nil
     Events["Set" .. stem .. "Enabled"] = function(value)
         Settings:SetBool(tracker.settings.enabled, value)
         tracker:refresh()
@@ -808,11 +1119,15 @@ bindEnabled("Enemies", enemiesTracker)
 bindEnabled("Cat", catTracker)
 bindEnabled("Guardian", guardianTracker)
 
+---@param value boolean
+---@return nil
 Events.SetCatNotificationEnabled = function(value)
     Settings:SetBool("catNotificationEnabled", value)
     refreshTrackers()
 end
 
+---Index configuration IDs and subscribe to server updates.
+---@return nil
 Events.SubscribeAll = function()
     trackersByConfigID = {}
     for _, tracker in ipairs(trackers) do
@@ -831,6 +1146,8 @@ Events.SubscribeAll = function()
     refreshTrackers()
 end
 
+---Release all subscriptions, popups, and tracked highlights.
+---@return nil
 Events.UnsubscribeAll = function()
     Event.ServerLogic.Unsubscribe("plunderHelper:refresh")
     for popup in pairs(catPopups) do popup:Destroy() end

@@ -1,13 +1,54 @@
+---@class PlunderEnabledOption
+---@field text string
+---@field key string Persistent setting key.
+---@field event string Name of the boolean setter on PlunderEvents.
+
+---@class PlunderTrackingOptions
+---@field prefix string Prefix used for stored settings.
+---@field stem string Category name used in event methods.
+---@field title string
+---@field name string
+---@field noun string
+---@field overlayTooltip string
+---@field enabled PlunderEnabledOption[]
+
+---@class PlunderColorDefinition
+---@field label string
+---@field suffix string
+---@field noun string
+---@field visibility string
+---@field tooltip string
+---@field showTooltip string
+---@field extraToggles? PlunderExtraToggle[]
+
+---@class PlunderTrackingUI
 local Tracking = {}
 local Settings = require("resources/settings")
 local Colors = require("resources/ui/colors")
 
+---@param page prettyui.SimpleView
+---@param events PlunderEvents
+---@param options PlunderTrackingOptions
+---@return nil
 function Tracking.Create(page, events, options)
     local prefix, stem = options.prefix, options.stem
+    ---@param suffix string
+    ---@return string
     local function key(suffix) return prefix .. suffix end
+    ---@param suffix string
+    ---@return string
     local function show(suffix) return "show" .. stem .. suffix end
+    ---@param suffix string
+    ---@return string
     local function fill(suffix) return "fill" .. stem .. suffix end
+    ---@param suffix string
+    ---@return fun(value: boolean|integer)
     local function setter(suffix) return events["Set" .. stem .. suffix] end
+    ---@param text string
+    ---@param tooltip string
+    ---@param setting string
+    ---@param callback fun(selected: boolean)
+    ---@return PlunderExtraToggle
     local function toggle(text, tooltip, setting, callback)
         return {
             choice = {
@@ -20,6 +61,13 @@ function Tracking.Create(page, events, options)
         }
     end
 
+    ---@param label string
+    ---@param setting string
+    ---@param fallback integer
+    ---@param minimum integer
+    ---@param maximum integer
+    ---@param callback fun(value: integer)
+    ---@return nil
     local function slider(label, setting, fallback, minimum, maximum, callback)
         page:AddText(label)
         page:AddSlider({ min = minimum, max = maximum, value = Settings:GetInt(setting) or fallback, onChange = function(_, value) callback(value) end })
@@ -41,6 +89,7 @@ function Tracking.Create(page, events, options)
 
     slider("Font Size", key("FontSize"), 12, 10, 50, setter("FontSize"))
 
+    ---@type PlunderColorDefinition[]
     local definitions = {
         {
             label = "Text",
@@ -84,6 +133,7 @@ function Tracking.Create(page, events, options)
         }
     }
 
+    ---@type PlunderColorSetting[]
     local colors = {}
 
     for _, definition in ipairs(definitions) do
